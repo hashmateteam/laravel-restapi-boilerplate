@@ -1,3 +1,6 @@
+## About improvement-branch
+Working on exceptions in JSON and other stuff related to generating response
+
 ## About Laravel-RESTAPI-Boilerplate
 
 Laravel-RESTAPI-Boilerplate is the repository for developers to easily create their project with pre-installed Laravel-Passport authenication for default class "User" that laravel makes on first intialization of any new project.
