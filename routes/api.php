@@ -18,8 +18,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('login', 'API\UserController@authin');
-Route::post('register', 'API\UserController@authup');
+Route::post('authin', 'API\UserController@authin');
+Route::post('authup', 'API\UserController@authup');
 Route::group(['middleware' => 'auth:api'], function(){
-    // any api function routing like { Route::post('details', 'API\UserController@details'); }
+      Route::post('any', 'API\UserController@any');
 });

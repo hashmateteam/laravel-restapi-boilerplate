@@ -46,17 +46,14 @@ class UserController extends Controller {
         $success['name'] =  $user->name;
         return response()->json(['success'=>$success], $this-> successStatus); 
     }
-    /* 
+    /** 
      * any api function
      * 
      * @return \Illuminate\Http\Response 
-      
+    */  
     public function any() 
     { 
         $user = Auth::user(); 
         return response()->json(['success' => $user], $this-> successStatus); 
-    }
-
-    */ 
-
+    } 
 }
