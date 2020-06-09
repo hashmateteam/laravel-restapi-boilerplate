@@ -10,6 +10,20 @@ This boilerplate has "UserController" that contains two sample function that use
 
 Laravel already makes it easy to perform authentication via traditional login forms, but what about APIs? APIs typically use tokens to authenticate users and do not maintain session state between requests. Laravel makes API authentication a breeze using Laravel Passport, which provides a full OAuth2 server implementation for your Laravel application in a matter of minutes. Passport is built on top of the League OAuth2 server that is maintained by Andy Millington and Simon Hamp.
 
+## Installation
+
+1. git clone https://github.com/hashmateteam/laravel-restapi-boilerplate.git
+2. cd laravel-restapi-boilerplate
+3. make .env file and copy .env.example content to .env file
+4. set your database credentials in .env file
+5. composer i
+6. php artisan key:generate
+7. php artisan migrate:fresh
+8. php artisan passport:install
+9. php artisan serve
+
+ENJOY !!
+
 ## Contributing
 
 Thank you for considering contributing to this Boilerplate! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
