@@ -3,57 +3,129 @@ namespace App\Http\Controllers\API;
 use Illuminate\Http\Request; 
 use App\Http\Controllers\Controller; 
 use App\User; 
-use Illuminate\Support\Facades\Auth; 
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Carbon; 
 use Validator;
+use App\Http\Controllers\API\Helpers\ResponseHelper;
+
 class UserController extends Controller {
-    public $successStatus = 200;
-    /** 
-     * login api 
-     * 
-     * @return \Illuminate\Http\Response 
-     */ 
     
-    public function authin(){ 
-        if(Auth::attempt(['email' => request('email'), 'password' => request('password')])){ 
-            $user = Auth::user(); 
-            $success['token'] =  $user->createToken('MyApp')-> accessToken; 
-            return response()->json(['success' => $success], $this-> successStatus); 
-        } 
-        else{ 
-            return response()->json(['error'=>'Unauthorised'], 401); 
-        } 
+    public function authin(Request $request){ 
+        //NEW RESPONSE_HELPER object
+        $xponse = new ResponseHelper();
+
+        //Parsing all inputs from request
+        $xponse->get_inputs($request);
+        
+        //Validating
+        if(!$xponse->validater([
+            'email'=>'required|email:rfc,dns|exists:users',
+            'password'=>'required|min:6|max:64'
+        ])){
+            //If fail then send response
+            return $xponse->json_back();
+        }
+
+        //Logging in... 
+        if(Auth::attempt(['email' => $xponse->inputs['email'], 'password' => $xponse->inputs['password']])){
+            //Sending token...
+            $user = Auth::user();
+            return $xponse->response([
+                'code'    => 200,
+                'message' => "[ " . $user->email . " ] is being authenticated successfully. Your bearer_token is dispatched in return data.",
+                'data'    => ['token' => $user->createToken('auth')->accessToken, 'user' => $user ],
+                'errors'  => ''
+            ]);
+        }else{
+            //Credentials are in correct
+            return $xponse->response([
+                'code'      => 400,
+                'message'   => "[ ". $xponse->inputs["email"] . " ] is not being authenticated with the given credentials.",
+                'data'      => '',
+                'errors'    => ['type' => 'not_matched','alert' => "Your credentials didn't match our users base..."],
+            ]);
+        }
     }
-    /** 
-     * Register api 
-     * 
-     * @return \Illuminate\Http\Response 
-     */ 
     
     public function authup(Request $request) { 
-        $validator = Validator::make($request->all(), [ 
+        //NEW RESPONSE_HELPER object
+        $xponse = new ResponseHelper();
+
+        //Parsing all inputs from request
+        $xponse->get_inputs($request);
+        
+        //Validating
+        if(!$xponse->validater([
             'name' => 'required', 
-            'email' => 'required|email', 
-            'password' => 'required', 
-            'c_password' => 'required|same:password', 
-        ]);
-        if ($validator->fails()) { 
-            return response()->json(['error'=>$validator->errors()], 401);            
+            'email' => 'required|email:rfc,dns|unique:users', 
+            'password' => 'required|min:6|max:64', 
+            'c_password' => 'required|same:password',
+        ])){
+            //If fail then send response
+            return $xponse->json_back();
         }
+
+        //Encrypting password...
         $input = $request->all(); 
         $input['password'] = bcrypt($input['password']); 
-        $user = User::create($input); 
-        $success['token'] =  $user->createToken('MyApp')-> accessToken; 
-        $success['name'] =  $user->name;
-        return response()->json(['success'=>$success], $this-> successStatus); 
+        
+        //Create a new user
+        $user = User::create($input);
+        
+        //Sending response...
+        return $xponse->response([
+            'code'    => 200,
+            'message' => "[ " . $user->email . " ] has been registered successfully. Your bearer_token is dispatched in return data.",
+            'data'    => ['token' => $user->createToken('auth')->accessToken, 'user' => $user ],
+            'errors'  => ''
+        ]); 
     }
-    /** 
-     * any api function
-     * 
-     * @return \Illuminate\Http\Response 
-    */  
-    public function any() 
-    { 
-        $user = Auth::user(); 
-        return response()->json(['success' => $user], $this-> successStatus); 
+    
+    public function auth(Request $request){ 
+        //NEW RESPONSE_HELPER object
+        $xponse = new ResponseHelper();
+
+        //Parsing all inputs from request
+        $xponse->get_inputs($request);
+        
+        if(Auth::check()){
+            $user = Auth::user();
+            return $xponse->response([
+                'code'    => 200,
+                'message' => "[ " . $user->email . " ] is being using this function. Authenticated user is dispatched in return data.",
+                'data'    => ['user' => $user ],
+                'errors'  => ''
+            ]);
+        }
+        return $xponse->response([
+            'code'    => 400,
+            'message' => "You are not authorized to access this function without credentials or valid tokens.",
+            'data'    => '',
+            'errors'  => ['type' => 'not_valid_token', 'alert' => 'The Authenticated token code is invalid or may not be found.' ]
+        ]);
+    }
+
+    public function any(Request $request){ 
+        //NEW RESPONSE_HELPER object
+        $xponse = new ResponseHelper();
+
+        //Parsing all inputs from request
+        $xponse->get_inputs($request);
+
+        if(Auth::check()){
+            $user = Auth::user();
+            return $xponse->response([
+                'code'    => 200,
+                'message' => "[ " . $user->email . " ] is being using this function. Authenticated user is dispatched in return data.",
+                'data'    => ['user' => $user ],
+                'errors'  => ''
+            ]);
+        }
+        return $xponse->response([
+            'code'    => 400,
+            'message' => "You are not authorized to access this function without credentials or valid tokens.",
+            'data'    => '',
+            'errors'  => ['type' => 'not_valid_token', 'alert' => 'The Authenticated token code is invalid or may not be found.' ]
+        ]);
     } 
 }
