@@ -34,10 +34,27 @@ class UserController extends Controller {
         if(Auth::attempt(['email' => $xponse->inputs['email'], 'password' => $xponse->inputs['password']])){
             //Sending token...
             $user = Auth::user();
+            
+            $token = $user->createToken('auth',['default-user']);
+            $created_at = Carbon::parse($token->token->created_at)->toDayDateTimeString();
+            $expire = Carbon::now()->diffInSeconds(Carbon::parse($token->token->expires_at));
+            $expire_at = Carbon::parse($token->token->expires_at)->toDayDateTimeString();
+
             return $xponse->response([
                 'code'    => 200,
                 'message' => "[ " . $user->email . " ] is being authenticated successfully. Your bearer_token is dispatched in return data.",
-                'data'    => ['token' => $user->createToken('auth',['default-user'])->accessToken, 'user' => $user ],
+                'data'    => [
+                    'access' =>[
+                        "name" => $token->token->name,
+                        'token' => $token->accessToken,
+                        'created_at' => $created_at ,
+                        'expire_at' => $expire_at ,
+                        'expires_in'=>$expire, 
+                        'expire_format'=>'seconds',
+                        'scopes' => $token->token->scopes
+                    ],
+                    'user' => $user
+                 ],
                 'errors'  => ''
             ]);
         }else{
@@ -72,12 +89,27 @@ class UserController extends Controller {
         
         //Create a new user
         $user = User::create($input);
-        
+
+        $token = $user->createToken('auth',['default-user']);
+        $created_at = Carbon::parse($token->token->created_at)->toDayDateTimeString();
+        $expire = Carbon::now()->diffInSeconds(Carbon::parse($token->token->expires_at));
+        $expire_at = Carbon::parse($token->token->expires_at)->toDayDateTimeString();
         //Sending response...
         return $xponse->response([
             'code'    => 200,
             'message' => "[ " . $user->email . " ] has been registered successfully. Your bearer_token is dispatched in return data.",
-            'data'    => ['token' => $user->createToken('auth',['default'])->accessToken, 'user' => $user ],
+            'data'    => [
+                'access' =>[
+                    "name" => $token->token->name,
+                    'token' => $token->accessToken,
+                    'created_at' => $created_at ,
+                    'expire_at' => $expire_at ,
+                    'expires_in'=>$expire, 
+                    'expire_format'=>'seconds',
+                    'scopes' => $token->token->scopes
+                ],
+                'user' => $user
+             ],
             'errors'  => ''
         ]); 
     }
