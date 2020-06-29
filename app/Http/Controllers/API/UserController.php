@@ -16,7 +16,7 @@ use App\User;
 class UserController extends Controller {
 
     private $scopes = [
-        'auth'  =>  ['default-user'=>['admin']],
+        'auth'  =>  ['default-user'],
         'any'   =>  ['default-admin'],
     ];
 
