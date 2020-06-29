@@ -80,63 +80,84 @@ class ResponseHelper extends Controller {
     }
 
     private function scope_limiter($name, Request $request){
-        $missing_scope = '';
-        $request_scope = '';
-        $scopes = '';
-        $joiner = false;
-        if(isset($this->scopes[$name]['joiner'])){
-            $joiner = array();
-            foreach($this->scopes[$name]['joiner'] as $scope){
-                array_push($joiner,$scope);
-            }    
-        }
-        $join_buble = true;
-        $scope_buble = false;
-        $missing_scope = 'atleast_one(';
-        foreach($this->scopes[$name] as $scope){
-            if(!is_array($scope)){
-                $scopes = $scopes .$scope;
-                if ($this->request->user()->tokenCan($scope)) {
-                    $request_scope = $request_scope . $scope . ",";
-                    $scope_buble = true;
-                }else{
-                    $missing_scope = $missing_scope . $scope . ',';
-                }
-                $scopes = $scopes .",";
-            }
-        }
-        $missing_scope = $missing_scope . ')';
-        if($scope_buble){
+        if(isset($this->scopes[$name]) && (!empty($this->scopes[$name]))){
             $missing_scope = '';
-        }
-        $scopes = str_limit($scopes, strlen($scopes) - 1,'');
-        $request_scope = str_limit($request_scope, strlen($request_scope) - 1,'');
-        if($scope_buble){
-            if($joiner != false){
-                $scopes = $scopes .",joiner=>[required(";
-                foreach($this->scopes[$name]['joiner'] as $scope){
-                    $scopes = $scopes . $scope. ',';
-                    $request_scope = $request_scope . ",";
-                    if (!$this->request->user()->tokenCan($scope)) {
-                        $join_buble = false;
-                        $missing_scope = $missing_scope . $scope .',';
-                    }else{
+            $request_scope = '';
+            $scopes = '';
+            $join_buble = true;
+            $scope_buble = false;
+            $joiner = array();
+            $missing_scope = 'atleast_one(';
+            foreach($this->scopes[$name] as $key=>$scope){
+                if(!is_array($scope)){
+                    $scopes = $scopes .$scope;
+                    if ($this->request->user()->tokenCan($scope)) {
                         $request_scope = $request_scope . $scope . ",";
+                        $scope_buble = true;
+                    }else{
+                        $missing_scope = $missing_scope . $scope . ',';
                     }
+                    $scopes = $scopes .",";
+                }else{
+                    $scopes = $scopes . $key;
+                    if ($this->request->user()->tokenCan($key)) {
+                        $request_scope = $request_scope . $key . ",";
+                        $scope_buble = true;
+                        $joiner[$key] = array();
+                        foreach($scope as $join){
+                            array_push($joiner[$key],$join);
+                        }
+                    }else{
+                        $missing_scope = $missing_scope . $key . ',';
+                    }
+                    $scopes = $scopes .",";
+                    
                 }
-                $scopes = str_limit($scopes, strlen($scopes) - 1,'');
-                $scopes = $scopes .")]";
-                $request_scope = str_limit($request_scope, strlen($request_scope) - 1,'');
+            }
+            if($missing_scope != ''){
                 $missing_scope = str_limit($missing_scope, strlen($missing_scope) - 1,'');
+                $missing_scope = $missing_scope . ')';
             }
-            if($join_buble){
-                return true;
+            if($scope_buble){
+                $missing_scope = '';
             }
+            if($scopes != ''){
+                $scopes = str_limit($scopes, strlen($scopes) - 1,'');
+            }
+            if($request_scope != ''){
+                $request_scope = str_limit($request_scope, strlen($request_scope) - 1,'');
+            }
+            if($scope_buble){
+                if($joiner != false){
+                    foreach($joiner as $scope=>$join_array){
+                        $scopes = $scopes .",$scope=>[required(";
+                        foreach($join_array as $joins){
+                            $scopes = $scopes . $joins. ',';
+                            $request_scope = $request_scope . ",";
+                            if (!$this->request->user()->tokenCan($joins)) {
+                                $join_buble = false;
+                                $missing_scope = $missing_scope . $joins .',';
+                            }else{
+                                $request_scope = $request_scope . $joins . ",";
+                            }
+                        }
+                        $scopes = str_limit($scopes, strlen($scopes) - 1,'');
+                        $scopes = $scopes .")]";
+                    }
+                    //$scopes = str_limit($scopes, strlen($scopes) - 1,'');
+                    $request_scope = str_limit($request_scope, strlen($request_scope) - 1,'');
+                    $missing_scope = str_limit($missing_scope, strlen($missing_scope) - 1,'');
+                }
+                if($join_buble){
+                    return true;
+                }
+            }
+            $this->errors   = ['matched_scopes'=>$request_scope,'required_scopes'=>$scopes,'missing_scopes'=>$missing_scope,'requested_method'=>$name,'type' => 'scope_not_included', 'alert' => 'The Authenticated token code is valid but may have not permission to do this operation.'];
+            $this->code     = 400;
+            $this->data     = '';
+            $this->message  = "You are not authorized to access this function with this limited scope token.";
+            return false;
         }
-        $this->errors   = ['received_scopes'=>$request_scope,'required_scopes'=>$scopes,'missing_scopes'=>$missing_scope,'requested_method'=>$name,'type' => 'scope_not_included', 'alert' => 'The Authenticated token code is valid but may have not permission to do this operation.'];
-        $this->code     = 400;
-        $this->data     = '';
-        $this->message  = "You are not authorized to access this function with with limited scope token.";
-        return false;
+        return true;
     }
 }

@@ -1,22 +1,20 @@
 <?php
+
 namespace App\Http\Controllers\API;
-use Illuminate\Http\Request; 
-use App\Http\Controllers\Controller; 
-use App\User; 
+
+use App\Http\Controllers\API\Helpers\ResponseHelper;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Carbon; 
-use Validator;
-use App\Http\Controllers\API\Helpers\ResponseHelper;
+use Illuminate\Http\Request; 
+use Validator; 
+use App\User; 
 
 class UserController extends Controller {
 
     private $scopes = [
-        'authin' => ['default-user'],
-        'authup' => ['default-user'],
-        'auth' => ['default-user','basic','joiner'=>[
-            'default-admin','user_status'
-        ]],
-        'any' => ['default'],
+        'auth'  =>  ['default-user'],
+        'any'   =>  ['default-admin'],
     ];
 
     public function authin(Request $request){ 
@@ -39,7 +37,7 @@ class UserController extends Controller {
             return $xponse->response([
                 'code'    => 200,
                 'message' => "[ " . $user->email . " ] is being authenticated successfully. Your bearer_token is dispatched in return data.",
-                'data'    => ['token' => $user->createToken('auth',['default-user','default-admin'])->accessToken, 'user' => $user ],
+                'data'    => ['token' => $user->createToken('auth',['default-user'])->accessToken, 'user' => $user ],
                 'errors'  => ''
             ]);
         }else{
