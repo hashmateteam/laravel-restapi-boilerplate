@@ -9,13 +9,19 @@ use Validator;
 use App\Http\Controllers\API\Helpers\ResponseHelper;
 
 class UserController extends Controller {
-    
+
+    private $scopes = [
+        'authin' => ['default-user'],
+        'authup' => ['default-user'],
+        'auth' => ['default-user','basic','joiner'=>[
+            'default-admin','user_status'
+        ]],
+        'any' => ['default'],
+    ];
+
     public function authin(Request $request){ 
         //NEW RESPONSE_HELPER object
-        $xponse = new ResponseHelper();
-
-        //Parsing all inputs from request
-        $xponse->get_inputs($request);
+        $xponse = new ResponseHelper($request,false);
         
         //Validating
         if(!$xponse->validater([
@@ -23,7 +29,7 @@ class UserController extends Controller {
             'password'=>'required|min:6|max:64'
         ])){
             //If fail then send response
-            return $xponse->json_back();
+            return $xponse->response();
         }
 
         //Logging in... 
@@ -33,7 +39,7 @@ class UserController extends Controller {
             return $xponse->response([
                 'code'    => 200,
                 'message' => "[ " . $user->email . " ] is being authenticated successfully. Your bearer_token is dispatched in return data.",
-                'data'    => ['token' => $user->createToken('auth')->accessToken, 'user' => $user ],
+                'data'    => ['token' => $user->createToken('auth',['default-user','default-admin'])->accessToken, 'user' => $user ],
                 'errors'  => ''
             ]);
         }else{
@@ -47,13 +53,10 @@ class UserController extends Controller {
         }
     }
     
-    public function authup(Request $request) { 
+    public function authup(Request $request) {
         //NEW RESPONSE_HELPER object
-        $xponse = new ResponseHelper();
+        $xponse = new ResponseHelper($request,false);
 
-        //Parsing all inputs from request
-        $xponse->get_inputs($request);
-        
         //Validating
         if(!$xponse->validater([
             'name' => 'required', 
@@ -62,7 +65,7 @@ class UserController extends Controller {
             'c_password' => 'required|same:password',
         ])){
             //If fail then send response
-            return $xponse->json_back();
+            return $xponse->response();
         }
 
         //Encrypting password...
@@ -76,18 +79,18 @@ class UserController extends Controller {
         return $xponse->response([
             'code'    => 200,
             'message' => "[ " . $user->email . " ] has been registered successfully. Your bearer_token is dispatched in return data.",
-            'data'    => ['token' => $user->createToken('auth')->accessToken, 'user' => $user ],
+            'data'    => ['token' => $user->createToken('auth',['default'])->accessToken, 'user' => $user ],
             'errors'  => ''
         ]); 
     }
     
     public function auth(Request $request){ 
         //NEW RESPONSE_HELPER object
-        $xponse = new ResponseHelper();
+        $xponse = new ResponseHelper($request,$this->scopes,__FUNCTION__);
+        if(!$xponse->is_allowed()){
+            return $xponse->response();
+        }
 
-        //Parsing all inputs from request
-        $xponse->get_inputs($request);
-        
         if(Auth::check()){
             $user = Auth::user();
             return $xponse->response([
@@ -106,11 +109,12 @@ class UserController extends Controller {
     }
 
     public function any(Request $request){ 
+        
         //NEW RESPONSE_HELPER object
-        $xponse = new ResponseHelper();
-
-        //Parsing all inputs from request
-        $xponse->get_inputs($request);
+        $xponse = new ResponseHelper($request,$this->scopes,__FUNCTION__);
+        if(!$xponse->is_allowed()){
+            return $xponse->response();
+        }
 
         if(Auth::check()){
             $user = Auth::user();
