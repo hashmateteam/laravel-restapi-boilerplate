@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('authin', 'API\UserController@authin');
 Route::put('authup', 'API\UserController@authup');
+Route::post('refresh_token','API\UserController@refresh_token');
 Route::group(['middleware' => 'auth:api'], function(){
     Route::get('auth', 'API\UserController@auth');
     //other api's

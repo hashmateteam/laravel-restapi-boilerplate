@@ -3,17 +3,20 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\API\Helpers\ResponseHelper;
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon; 
 use Illuminate\Http\Request; 
 use Validator; 
 use App\User; 
 
+
 class UserController extends Controller {
 
     private $scopes = [
-        'auth'  =>  ['default-user'],
+        'auth'  =>  ['default-user'=>['admin']],
         'any'   =>  ['default-admin'],
     ];
 
@@ -35,23 +38,45 @@ class UserController extends Controller {
             //Sending token...
             $user = Auth::user();
             
-            $token = $user->createToken('auth',['default-user']);
-            $created_at = Carbon::parse($token->token->created_at)->toDayDateTimeString();
-            $expire = Carbon::now()->diffInSeconds(Carbon::parse($token->token->expires_at));
-            $expire_at = Carbon::parse($token->token->expires_at)->toDayDateTimeString();
+            $client = DB::table('oauth_clients')->where('id', 2)->first();
+
+            $params = [
+                'username' => $xponse->inputs['email'],
+                'password' => $xponse->inputs['password'],
+                'grant_type' => 'password',
+                'client_id' => $client->id,
+                'client_secret' => $client->secret,
+                'scope' => 'default-user'
+            ];
+
+            $proxy = Request::create(
+                'oauth/token',
+                'POST',
+                $params
+            );
+            
+            $res = app()->handle($proxy);
+            $response = json_decode($res->getContent(),true);
+            //return Route::dispatch($proxy);
+
+            //$token = $user->createToken('auth',['default-user']);
+            $created_at = Carbon::now()->toDayDateTimeString();
+            $expire_at = Carbon::now()->addSeconds($response["expires_in"])->toDayDateTimeString();
+            //$expire_at = Carbon::parse($response["expires_in"])->toDayDateTimeString();
 
             return $xponse->response([
                 'code'    => 200,
                 'message' => "[ " . $user->email . " ] is being authenticated successfully. Your bearer_token is dispatched in return data.",
                 'data'    => [
                     'access' =>[
-                        "name" => $token->token->name,
-                        'token' => $token->accessToken,
+                        //'response' => $response,
+                        //"name" => $token->token->name,
+                        'access_token' => $response["access_token"],
+                        'refresh_token' => $response["refresh_token"],
                         'created_at' => $created_at ,
                         'expire_at' => $expire_at ,
-                        'expires_in'=>$expire, 
+                        'expires_in'=>$response["expires_in"], 
                         'expire_format'=>'seconds',
-                        'scopes' => $token->token->scopes
                     ],
                     'user' => $user
                  ],
@@ -94,6 +119,7 @@ class UserController extends Controller {
         $created_at = Carbon::parse($token->token->created_at)->toDayDateTimeString();
         $expire = Carbon::now()->diffInSeconds(Carbon::parse($token->token->expires_at));
         $expire_at = Carbon::parse($token->token->expires_at)->toDayDateTimeString();
+
         //Sending response...
         return $xponse->response([
             'code'    => 200,
@@ -160,6 +186,49 @@ class UserController extends Controller {
             'message' => "You are not authorized to access this function without credentials or valid tokens.",
             'data'    => '',
             'errors'  => ['type' => 'not_valid_token', 'alert' => 'The Authenticated token code is invalid or may not be found.' ]
+        ]);
+    }
+    public function refresh_token(Request $request){
+        //NEW RESPONSE_HELPER object
+        $xponse = new ResponseHelper($request,false);
+        
+        //Validating
+        if(!$xponse->validater([
+            'refresh_token'=>'required'
+        ])){
+            //If fail then send response
+            return $xponse->response();
+        }
+        $client = DB::table('oauth_clients')->where('id', 2)->first();
+
+        $params = [
+            'grant_type' => 'refresh_token',
+            'refresh_token' => $xponse->inputs['refresh_token'],
+            'client_id' => $client->id,
+            'client_secret' => $client->secret,
+        ];
+
+        $proxy = Request::create(
+            'oauth/token',
+            'POST',
+            $params
+        );
+        
+        $res = app()->handle($proxy);
+        $response = json_decode($res->getContent(),true);
+        if(isset($response['error'])){
+            return $xponse->response([
+                'code'    => 400,
+                'message' => "You must have to use the latest refresh token to get new access_token.",
+                'data'    => '',
+                'errors' => $response,
+            ]);    
+        }
+        return $xponse->response([
+            'code'    => 200,
+            'message' => "Your new access_token is dispatched in return data with new refresh_token.",
+            'data'    => $response,
+            'errors' => '',
         ]);
     } 
 }
