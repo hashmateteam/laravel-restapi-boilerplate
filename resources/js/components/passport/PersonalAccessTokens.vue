@@ -205,16 +205,7 @@
              * Get all of the personal access tokens for the user.
              */
             getTokens() {
-                var config = {
-                    method: 'get',
-                    url: 'oauth/personal-access-tokens',
-                    headers: { 
-                        'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiNzQ0MmE2NDE2ZGNiMTRhYWQ4ZjU4YzI4MTNhMTM0MWY5Njc0NDY1OWRlZjRhNWI2ZGE2N2E5ZGMwNjAxMGZhYjk2MzZkMzk4N2I4YmZjMGYiLCJpYXQiOjE1OTMxNzEyNjQsIm5iZiI6MTU5MzE3MTI2NCwiZXhwIjoxNjI0NzA3MjY0LCJzdWIiOiIxIiwic2NvcGVzIjpbXX0.r-TRwwoiKiYlapILXKb5yRIDO71LT14B0sC0GvDLzhXh-EXVkCKnVSUbahfRxHwtJWDgwGFZ4grrlRZxXNiwO8FcWFy6z2ATXBTbEfbzevh2r04PfjwF7Pt_bFT9y8RVwAPHTKD_Jr2omD_cpTz6lMkMXkUo70jm6yOFtSWRpM-zcvezGvjsxmulAwuQzqfENjc-IjgvmC9emT4oJKhYPNc-wED6uSYK6btuf4JBzA7tiU6veVBlpWvEMmChoCBPO7U0gfnSZPo9oKojYFuxypnGO2gTLOq6QGvU4Ldy5ZiXsXJXSJt7OO_8sPh4T2HJnWJpyrthyRrDH9GNKlMbZQVPbrlXFOym9t8te0U3zOzNbLnB0Zc1IMAnlW6YqPEidc6jYhCgPSb59hC9ZJ4iFGGmEvXsH6IFRIjeB_Dui6aJdsfJ5iB6oEBYxYePobo2kLKzbtAc9PscqpVy34JeNACPZQWGAOPYI_VZF6H6rxjCuRzHaBC0Ltj-JY-Yb-tDU6w4EAZpG3eGiou9ApSa6641FyhlBEz4bj2lhWt1WqPA_CJfP1mUT7PXpmPL-2sjvASbwX9SooC56meFm3nux114IGUCe6PFGT8sSb-vlcRAmxd_drYl3--q0xg_hivSUiPpGOZ6i0XOqEVauNtjjfdgSbgjIEM04vFzdiv07z8',
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                        'Accept': 'application/json'
-                    }
-                };
-                axios(config)
+                axios.get('/oauth/personal-access-tokens')
                         .then(response => {
                             this.tokens = response.data;
                         });
@@ -224,16 +215,7 @@
              * Get all of the available scopes.
              */
             getScopes() {
-                var config = {
-                    method: 'get',
-                    url: 'oauth/scopes',
-                    headers: { 
-                        'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiNzQ0MmE2NDE2ZGNiMTRhYWQ4ZjU4YzI4MTNhMTM0MWY5Njc0NDY1OWRlZjRhNWI2ZGE2N2E5ZGMwNjAxMGZhYjk2MzZkMzk4N2I4YmZjMGYiLCJpYXQiOjE1OTMxNzEyNjQsIm5iZiI6MTU5MzE3MTI2NCwiZXhwIjoxNjI0NzA3MjY0LCJzdWIiOiIxIiwic2NvcGVzIjpbXX0.r-TRwwoiKiYlapILXKb5yRIDO71LT14B0sC0GvDLzhXh-EXVkCKnVSUbahfRxHwtJWDgwGFZ4grrlRZxXNiwO8FcWFy6z2ATXBTbEfbzevh2r04PfjwF7Pt_bFT9y8RVwAPHTKD_Jr2omD_cpTz6lMkMXkUo70jm6yOFtSWRpM-zcvezGvjsxmulAwuQzqfENjc-IjgvmC9emT4oJKhYPNc-wED6uSYK6btuf4JBzA7tiU6veVBlpWvEMmChoCBPO7U0gfnSZPo9oKojYFuxypnGO2gTLOq6QGvU4Ldy5ZiXsXJXSJt7OO_8sPh4T2HJnWJpyrthyRrDH9GNKlMbZQVPbrlXFOym9t8te0U3zOzNbLnB0Zc1IMAnlW6YqPEidc6jYhCgPSb59hC9ZJ4iFGGmEvXsH6IFRIjeB_Dui6aJdsfJ5iB6oEBYxYePobo2kLKzbtAc9PscqpVy34JeNACPZQWGAOPYI_VZF6H6rxjCuRzHaBC0Ltj-JY-Yb-tDU6w4EAZpG3eGiou9ApSa6641FyhlBEz4bj2lhWt1WqPA_CJfP1mUT7PXpmPL-2sjvASbwX9SooC56meFm3nux114IGUCe6PFGT8sSb-vlcRAmxd_drYl3--q0xg_hivSUiPpGOZ6i0XOqEVauNtjjfdgSbgjIEM04vFzdiv07z8',
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                        'Accept': 'application/json'
-                    }
-                };
-                axios(config)
+                axios.get('/oauth/scopes')
                         .then(response => {
                             this.scopes = response.data;
                         });
@@ -253,16 +235,8 @@
                 this.accessToken = null;
 
                 this.form.errors = [];
-                var config = {
-                    method: 'get',
-                    url: 'oauth/personal-access-tokens',
-                    headers: { 
-                        'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiNzQ0MmE2NDE2ZGNiMTRhYWQ4ZjU4YzI4MTNhMTM0MWY5Njc0NDY1OWRlZjRhNWI2ZGE2N2E5ZGMwNjAxMGZhYjk2MzZkMzk4N2I4YmZjMGYiLCJpYXQiOjE1OTMxNzEyNjQsIm5iZiI6MTU5MzE3MTI2NCwiZXhwIjoxNjI0NzA3MjY0LCJzdWIiOiIxIiwic2NvcGVzIjpbXX0.r-TRwwoiKiYlapILXKb5yRIDO71LT14B0sC0GvDLzhXh-EXVkCKnVSUbahfRxHwtJWDgwGFZ4grrlRZxXNiwO8FcWFy6z2ATXBTbEfbzevh2r04PfjwF7Pt_bFT9y8RVwAPHTKD_Jr2omD_cpTz6lMkMXkUo70jm6yOFtSWRpM-zcvezGvjsxmulAwuQzqfENjc-IjgvmC9emT4oJKhYPNc-wED6uSYK6btuf4JBzA7tiU6veVBlpWvEMmChoCBPO7U0gfnSZPo9oKojYFuxypnGO2gTLOq6QGvU4Ldy5ZiXsXJXSJt7OO_8sPh4T2HJnWJpyrthyRrDH9GNKlMbZQVPbrlXFOym9t8te0U3zOzNbLnB0Zc1IMAnlW6YqPEidc6jYhCgPSb59hC9ZJ4iFGGmEvXsH6IFRIjeB_Dui6aJdsfJ5iB6oEBYxYePobo2kLKzbtAc9PscqpVy34JeNACPZQWGAOPYI_VZF6H6rxjCuRzHaBC0Ltj-JY-Yb-tDU6w4EAZpG3eGiou9ApSa6641FyhlBEz4bj2lhWt1WqPA_CJfP1mUT7PXpmPL-2sjvASbwX9SooC56meFm3nux114IGUCe6PFGT8sSb-vlcRAmxd_drYl3--q0xg_hivSUiPpGOZ6i0XOqEVauNtjjfdgSbgjIEM04vFzdiv07z8',
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                        'Accept': 'application/json'
-                    }
-                };
-                axios.post('api/oauth/personal-access-tokens',config.headers, this.form)
+
+                axios.post('/oauth/personal-access-tokens', this.form)
                         .then(response => {
                             this.form.name = '';
                             this.form.scopes = [];
@@ -314,16 +288,7 @@
              * Revoke the given token.
              */
             revoke(token) {
-                var config = {
-                    method: 'delete',
-                    url: 'oauth/personal-access-tokens/' + token.id,
-                    headers: { 
-                        'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiNzQ0MmE2NDE2ZGNiMTRhYWQ4ZjU4YzI4MTNhMTM0MWY5Njc0NDY1OWRlZjRhNWI2ZGE2N2E5ZGMwNjAxMGZhYjk2MzZkMzk4N2I4YmZjMGYiLCJpYXQiOjE1OTMxNzEyNjQsIm5iZiI6MTU5MzE3MTI2NCwiZXhwIjoxNjI0NzA3MjY0LCJzdWIiOiIxIiwic2NvcGVzIjpbXX0.r-TRwwoiKiYlapILXKb5yRIDO71LT14B0sC0GvDLzhXh-EXVkCKnVSUbahfRxHwtJWDgwGFZ4grrlRZxXNiwO8FcWFy6z2ATXBTbEfbzevh2r04PfjwF7Pt_bFT9y8RVwAPHTKD_Jr2omD_cpTz6lMkMXkUo70jm6yOFtSWRpM-zcvezGvjsxmulAwuQzqfENjc-IjgvmC9emT4oJKhYPNc-wED6uSYK6btuf4JBzA7tiU6veVBlpWvEMmChoCBPO7U0gfnSZPo9oKojYFuxypnGO2gTLOq6QGvU4Ldy5ZiXsXJXSJt7OO_8sPh4T2HJnWJpyrthyRrDH9GNKlMbZQVPbrlXFOym9t8te0U3zOzNbLnB0Zc1IMAnlW6YqPEidc6jYhCgPSb59hC9ZJ4iFGGmEvXsH6IFRIjeB_Dui6aJdsfJ5iB6oEBYxYePobo2kLKzbtAc9PscqpVy34JeNACPZQWGAOPYI_VZF6H6rxjCuRzHaBC0Ltj-JY-Yb-tDU6w4EAZpG3eGiou9ApSa6641FyhlBEz4bj2lhWt1WqPA_CJfP1mUT7PXpmPL-2sjvASbwX9SooC56meFm3nux114IGUCe6PFGT8sSb-vlcRAmxd_drYl3--q0xg_hivSUiPpGOZ6i0XOqEVauNtjjfdgSbgjIEM04vFzdiv07z8',
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                        'Accept': 'application/json'
-                    }
-                };
-                axios(config)
+                axios.delete('/oauth/personal-access-tokens/' + token.id)
                         .then(response => {
                             this.getTokens();
                         });

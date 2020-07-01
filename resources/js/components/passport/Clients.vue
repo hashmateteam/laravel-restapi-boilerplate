@@ -316,16 +316,7 @@
              * Get all of the OAuth clients for the user.
              */
             getClients() {
-                var config = {
-                    method: 'get',
-                    url: 'oauth/clients',
-                    headers: { 
-                        'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiNzQ0MmE2NDE2ZGNiMTRhYWQ4ZjU4YzI4MTNhMTM0MWY5Njc0NDY1OWRlZjRhNWI2ZGE2N2E5ZGMwNjAxMGZhYjk2MzZkMzk4N2I4YmZjMGYiLCJpYXQiOjE1OTMxNzEyNjQsIm5iZiI6MTU5MzE3MTI2NCwiZXhwIjoxNjI0NzA3MjY0LCJzdWIiOiIxIiwic2NvcGVzIjpbXX0.r-TRwwoiKiYlapILXKb5yRIDO71LT14B0sC0GvDLzhXh-EXVkCKnVSUbahfRxHwtJWDgwGFZ4grrlRZxXNiwO8FcWFy6z2ATXBTbEfbzevh2r04PfjwF7Pt_bFT9y8RVwAPHTKD_Jr2omD_cpTz6lMkMXkUo70jm6yOFtSWRpM-zcvezGvjsxmulAwuQzqfENjc-IjgvmC9emT4oJKhYPNc-wED6uSYK6btuf4JBzA7tiU6veVBlpWvEMmChoCBPO7U0gfnSZPo9oKojYFuxypnGO2gTLOq6QGvU4Ldy5ZiXsXJXSJt7OO_8sPh4T2HJnWJpyrthyRrDH9GNKlMbZQVPbrlXFOym9t8te0U3zOzNbLnB0Zc1IMAnlW6YqPEidc6jYhCgPSb59hC9ZJ4iFGGmEvXsH6IFRIjeB_Dui6aJdsfJ5iB6oEBYxYePobo2kLKzbtAc9PscqpVy34JeNACPZQWGAOPYI_VZF6H6rxjCuRzHaBC0Ltj-JY-Yb-tDU6w4EAZpG3eGiou9ApSa6641FyhlBEz4bj2lhWt1WqPA_CJfP1mUT7PXpmPL-2sjvASbwX9SooC56meFm3nux114IGUCe6PFGT8sSb-vlcRAmxd_drYl3--q0xg_hivSUiPpGOZ6i0XOqEVauNtjjfdgSbgjIEM04vFzdiv07z8',
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                        'Accept': 'application/json'
-                    }
-                };
-                axios(config)
+                axios.get('/oauth/clients','',this.$store.getters.get_headers)
                         .then(response => {
                             this.clients = response.data;
                         });
@@ -378,16 +369,8 @@
              */
             persistClient(method, uri, form, modal) {
                 form.errors = [];
-                var config = {
-                    method: 'get',
-                    url: 'oauth/personal-access-tokens',
-                    headers: { 
-                        'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiNzQ0MmE2NDE2ZGNiMTRhYWQ4ZjU4YzI4MTNhMTM0MWY5Njc0NDY1OWRlZjRhNWI2ZGE2N2E5ZGMwNjAxMGZhYjk2MzZkMzk4N2I4YmZjMGYiLCJpYXQiOjE1OTMxNzEyNjQsIm5iZiI6MTU5MzE3MTI2NCwiZXhwIjoxNjI0NzA3MjY0LCJzdWIiOiIxIiwic2NvcGVzIjpbXX0.r-TRwwoiKiYlapILXKb5yRIDO71LT14B0sC0GvDLzhXh-EXVkCKnVSUbahfRxHwtJWDgwGFZ4grrlRZxXNiwO8FcWFy6z2ATXBTbEfbzevh2r04PfjwF7Pt_bFT9y8RVwAPHTKD_Jr2omD_cpTz6lMkMXkUo70jm6yOFtSWRpM-zcvezGvjsxmulAwuQzqfENjc-IjgvmC9emT4oJKhYPNc-wED6uSYK6btuf4JBzA7tiU6veVBlpWvEMmChoCBPO7U0gfnSZPo9oKojYFuxypnGO2gTLOq6QGvU4Ldy5ZiXsXJXSJt7OO_8sPh4T2HJnWJpyrthyRrDH9GNKlMbZQVPbrlXFOym9t8te0U3zOzNbLnB0Zc1IMAnlW6YqPEidc6jYhCgPSb59hC9ZJ4iFGGmEvXsH6IFRIjeB_Dui6aJdsfJ5iB6oEBYxYePobo2kLKzbtAc9PscqpVy34JeNACPZQWGAOPYI_VZF6H6rxjCuRzHaBC0Ltj-JY-Yb-tDU6w4EAZpG3eGiou9ApSa6641FyhlBEz4bj2lhWt1WqPA_CJfP1mUT7PXpmPL-2sjvASbwX9SooC56meFm3nux114IGUCe6PFGT8sSb-vlcRAmxd_drYl3--q0xg_hivSUiPpGOZ6i0XOqEVauNtjjfdgSbgjIEM04vFzdiv07z8',
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                        'Accept': 'application/json'
-                    }
-                };
-                axios[method](uri,config.headers, form)
+
+                axios[method](uri, form)
                     .then(response => {
                         this.getClients();
 
@@ -423,16 +406,7 @@
              * Destroy the given client.
              */
             destroy(client) {
-                var config = {
-                    method: 'delete',
-                    url: 'oauth/clients' + client.id,
-                    headers: { 
-                        'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiNzQ0MmE2NDE2ZGNiMTRhYWQ4ZjU4YzI4MTNhMTM0MWY5Njc0NDY1OWRlZjRhNWI2ZGE2N2E5ZGMwNjAxMGZhYjk2MzZkMzk4N2I4YmZjMGYiLCJpYXQiOjE1OTMxNzEyNjQsIm5iZiI6MTU5MzE3MTI2NCwiZXhwIjoxNjI0NzA3MjY0LCJzdWIiOiIxIiwic2NvcGVzIjpbXX0.r-TRwwoiKiYlapILXKb5yRIDO71LT14B0sC0GvDLzhXh-EXVkCKnVSUbahfRxHwtJWDgwGFZ4grrlRZxXNiwO8FcWFy6z2ATXBTbEfbzevh2r04PfjwF7Pt_bFT9y8RVwAPHTKD_Jr2omD_cpTz6lMkMXkUo70jm6yOFtSWRpM-zcvezGvjsxmulAwuQzqfENjc-IjgvmC9emT4oJKhYPNc-wED6uSYK6btuf4JBzA7tiU6veVBlpWvEMmChoCBPO7U0gfnSZPo9oKojYFuxypnGO2gTLOq6QGvU4Ldy5ZiXsXJXSJt7OO_8sPh4T2HJnWJpyrthyRrDH9GNKlMbZQVPbrlXFOym9t8te0U3zOzNbLnB0Zc1IMAnlW6YqPEidc6jYhCgPSb59hC9ZJ4iFGGmEvXsH6IFRIjeB_Dui6aJdsfJ5iB6oEBYxYePobo2kLKzbtAc9PscqpVy34JeNACPZQWGAOPYI_VZF6H6rxjCuRzHaBC0Ltj-JY-Yb-tDU6w4EAZpG3eGiou9ApSa6641FyhlBEz4bj2lhWt1WqPA_CJfP1mUT7PXpmPL-2sjvASbwX9SooC56meFm3nux114IGUCe6PFGT8sSb-vlcRAmxd_drYl3--q0xg_hivSUiPpGOZ6i0XOqEVauNtjjfdgSbgjIEM04vFzdiv07z8',
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                        'Accept': 'application/json'
-                    }
-                };
-                axios(config)
+                axios.delete('/oauth/clients/' + client.id)
                         .then(response => {
                             this.getClients();
                         });
